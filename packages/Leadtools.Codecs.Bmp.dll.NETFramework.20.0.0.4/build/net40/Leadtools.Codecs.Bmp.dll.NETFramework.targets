@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)\..\net40\x86\Leadtools.Codecs.Bmp.dll" Condition="'$(Platform)' == 'x86' Or ('$(Platform)' == 'AnyCPU' And ('$(Prefer32Bit)' == 'True' Or ('$(Use64BitIISExpress)' == 'False' And '$(Use64BitIISExpress)' != '')))">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Leadtools.Codecs.Bmp.dll</Link>
+      <PublishState>Included</PublishState>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)\..\net40\x64\Leadtools.Codecs.Bmp.dll" Condition="'$(Platform)' == 'x64' Or ('$(Platform)' == 'AnyCPU' And (('$(Prefer32Bit)' == 'False' And '$(Prefer32Bit)' != '') Or '$(Use64BitIISExpress)' == 'True'))">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Leadtools.Codecs.Bmp.dll</Link>
+      <PublishState>Included</PublishState>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+</Project>
