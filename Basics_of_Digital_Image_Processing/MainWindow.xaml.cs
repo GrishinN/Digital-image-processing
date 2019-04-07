@@ -36,6 +36,8 @@ namespace Basics_of_Digital_Image_Processing
         public string ImagePath { get; private set; }
         public BitmapImage bitmapImage { get; private set; }
 
+        delegate byte GetFilter(List<byte> pixels);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -47,9 +49,9 @@ namespace Basics_of_Digital_Image_Processing
         {
             brightnessPixels.Clear();
             byte[,] pixelsMatrix = new byte[image.PixelHeight, image.PixelWidth];
-            byte[] arr = new byte[image.PixelHeight * image.PixelWidth * (image.Format.BitsPerPixel / 8)];
+            byte[] arr = new byte[(int)(image.PixelHeight * image.PixelWidth * (image.Format.BitsPerPixel / 8.0))];
             
-            image.CopyPixels(arr, (image.Format.BitsPerPixel / 8) * image.PixelWidth, 0);
+            image.CopyPixels(arr, (int)((image.Format.BitsPerPixel / 8.0) * image.PixelWidth), 0);
             int count = 0;
 
             for (int i = 0; i < image.PixelHeight; i++)
@@ -61,9 +63,9 @@ namespace Basics_of_Digital_Image_Processing
                     count += 4;                    
                 }
             }
-            brightnessPixels.Sort();
-            BrightnessMin = brightnessPixels[0];
-            BrightnessMax = brightnessPixels[brightnessPixels.Count - 1];
+            
+            BrightnessMin = brightnessPixels.Min();
+            BrightnessMax = brightnessPixels.Max();
 
             return pixelsMatrix;
         }
@@ -107,20 +109,20 @@ namespace Basics_of_Digital_Image_Processing
 
         private BitmapSource BitmapFromByteArr(byte[,] img)
         {
-            byte[] arr1 = new byte[(img.GetUpperBound(0) + 1) * (img.GetUpperBound(1) + 1) * BitsPerPixel/8];
+            byte[] arr = new byte[(img.GetUpperBound(0) + 1) * (img.GetUpperBound(1) + 1) * BitsPerPixel/8];
             int count = 0;
             for(int i = 0; i <= img.GetUpperBound(0); i++)
             {
                 for(int j = 0; j <= img.GetUpperBound(1); j++)
                 {
-                    arr1[count] = img[i, j];
-                    arr1[++count] = img[i, j];
-                    arr1[++count] = img[i, j];
-                    arr1[++count] = 255;
+                    arr[count] = img[i, j];
+                    arr[++count] = img[i, j];
+                    arr[++count] = img[i, j];
+                    arr[++count] = 255;
                     count++;
                 }
             }
-            return BitmapSource.Create(img.GetUpperBound(1) + 1, img.GetUpperBound(0) + 1, bitmapImage.DpiX , bitmapImage.DpiY , PixelFormats.Bgr32, BitmapPalettes.BlackAndWhite, arr1, (BitsPerPixel / 8)* (img.GetUpperBound(1) + 1));
+            return BitmapSource.Create(img.GetUpperBound(1) + 1, img.GetUpperBound(0) + 1, bitmapImage.DpiX , bitmapImage.DpiY , PixelFormats.Bgr32, BitmapPalettes.BlackAndWhite, arr, (BitsPerPixel / 8)* (img.GetUpperBound(1) + 1));
 
         }
 
@@ -137,101 +139,30 @@ namespace Basics_of_Digital_Image_Processing
                     result[++count] = B[i, j];
                     result[++count] = 255;
                     count++;
-
                 }
             }
             return BitmapSource.Create(R.GetUpperBound(1) + 1, R.GetUpperBound(0) + 1, bitmapImage.DpiX, bitmapImage.DpiY, PixelFormats.Bgra32, null, result, (BitsPerPixel / 8) * (R.GetUpperBound(1) + 1));
 
         }
+               
+        private byte Minimum(List<byte> pixels)
+        {
+            return pixels[0];
+        }
+
+        private byte Maximum(List<byte> pixels)
+        {
+            return pixels[pixels.Count-1];
+        }
+
+        private byte Median(List<byte> pixels)
+        {
+            return pixels[(pixels.Count -1 )/2];
+        }
+
         
-         
 
-        private byte[,] MinimumFilter(byte[,] mas , int k)
-        {
-            byte[,] newImage = new byte[mas.GetUpperBound(0) + 1, mas.GetUpperBound(1) + 1];
-            int pol = k / 2;
-            for (int i = 0; i <= mas.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= mas.GetUpperBound(1); j++)
-                {
-                    int yy = i - pol;
-                    if (yy < 0)
-                    {
-                        yy = 0;
-                    }
-                    int xx = j - pol;
-                    if (xx < 0)
-                    {
-                        xx = 0;
-                    }
-                    int granicaW = j + pol;
-                    int granicaH = i + pol;
-                    if (granicaW > mas.GetUpperBound(1))
-                    {
-                        granicaW = mas.GetUpperBound(1);
-                    }
-                    if (granicaH > mas.GetUpperBound(0))
-                    {
-                        granicaH = mas.GetUpperBound(0);
-                    }
-
-                    List<byte> pixels = new List<byte>();
-                    for (int y = yy; y <= granicaH; y++)
-                    {
-                        for (int x = xx; x <= granicaW; x++)
-                        {
-                            pixels.Add(mas[y, x]);
-                        }
-                    }
-                    pixels.Sort();
-                    newImage[i, j] = pixels[0];
-                }
-            }
-            return newImage;
-        }
-
-        private byte[,] MaximumFilter(byte[,] mas, int k)
-        {
-            byte[,] newImage = new byte[mas.GetUpperBound(0) + 1, mas.GetUpperBound(1) + 1];
-            int pol = k / 2;
-            for (int i = 0; i <= mas.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= mas.GetUpperBound(1); j++)
-                {
-                    int yy = i - pol;
-                    if (yy < 0)
-                    {
-                        yy = 0;
-                    }
-                    int xx = j - pol;
-                    if (xx < 0)
-                    {
-                        xx = 0;
-                    }
-                    int granicaW = j + pol;
-                    int granicaH = i + pol;
-                    if (granicaW > mas.GetUpperBound(1))
-                    {
-                        granicaW = mas.GetUpperBound(1);
-                    }
-                    if (granicaH > mas.GetUpperBound(0))
-                    {
-                        granicaH = mas.GetUpperBound(0);
-                    }
-                    List<byte> pixels = new List<byte>();
-                    for (int y = yy; y <= granicaH; y++)
-                    {
-                        for (int x = xx; x <= granicaW; x++)
-                        {
-                            pixels.Add(mas[y, x]);
-                        }
-                    }
-                    pixels.Sort();
-                    newImage[i, j] = pixels[pixels.Count-1];
-                }
-            }
-            return newImage;
-        }
+        
 
         // именование
         private byte[,] HistogramAlignment(byte[,] img , List<byte> brightnessPixels)
@@ -244,7 +175,8 @@ namespace Basics_of_Digital_Image_Processing
                     mas[b] = brightnessPixels.FindAll(item => item == b).Count;
                 }
             }
-            int[] masCDF = funcCDF(mas);
+           
+            int[] masCDF = FuncCDF(mas);
             int min =  masCDF.Min();
 
             for(int i = 0; i <= img.GetUpperBound(0); i++)
@@ -257,7 +189,7 @@ namespace Basics_of_Digital_Image_Processing
             return img;
         }
 
-        private int[] funcCDF(int[] mas)
+        private int[] FuncCDF(int[] mas)
         {
             int[] cdf = new int[256];
             for(int i = 0; i < mas.Length; i++)
@@ -270,23 +202,18 @@ namespace Basics_of_Digital_Image_Processing
             return cdf;
         }
 
-        private byte[,] MedianFilter(byte[,] mas, int k)
-        {
+        private byte[,] FilterCore(byte[,] mas, int k , GetFilter filter)
+        {            
+            byte[,] newImage = new byte[mas.GetUpperBound(0) + 1, mas.GetUpperBound(1) + 1];
             int pol = k / 2;
             for (int i = 0; i <= mas.GetUpperBound(0); i++)
             {
                 for(int j = 0; j <= mas.GetUpperBound(1); j++)
                 {
-                    int yy = i - pol;
-                    if(yy < 0)
-                    {
-                        yy = 0;
-                    }
-                    int xx = j - pol;
-                    if(xx < 0)
-                    {
-                        xx = 0;
-                    }
+                    int yy = i - pol < 0 ? 0 : (i - pol);
+                    int xx = j - pol < 0 ? 0 : (j - pol);
+
+                    
                     int granicaW = j + pol;
                     int granicaH = i + pol;
                     if (granicaW > mas.GetUpperBound(1))
@@ -306,10 +233,10 @@ namespace Basics_of_Digital_Image_Processing
                         }
                     }
                     pixels.Sort();
-                    mas[i, j] = pixels[pixels.Count / 2];
+                    newImage[i, j] = filter(pixels);
                 }
             }
-            return mas;
+            return newImage;
         }
 
         private byte[,] LinearСontrast(byte[,] img)
@@ -331,8 +258,8 @@ namespace Basics_of_Digital_Image_Processing
         {
             Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
             openFileDlg.DefaultExt = ".jpg";
-            openFileDlg.Filter = "Image Files(*.BMP;*.JPG;*.PNG)|*.BMP;*.JPG;*.PNG|All files (*.*)|*.*";
-            openFileDlg.InitialDirectory = @"C:\Users\Nikita Grishin\source\repos\Basics_of_Digital_Image_Processing\Basics_of_Digital_Image_Processing";
+            openFileDlg.Filter = "Image Files(*.BMP;*.JPG;*.PNG;)|*.BMP;*.JPG;*.PNG;|All files (*.*)|*.*";
+            openFileDlg.InitialDirectory = @"C:\Users\Nikita Grishin\source\repos\Basics_of_Digital_Image_Processing\Basics_of_Digital_Image_Processing\Images";
             //Launch OpenFileDialog by calling ShowDialog method
             Nullable<bool> result = openFileDlg.ShowDialog();           
             if (result == true)
@@ -353,7 +280,8 @@ namespace Basics_of_Digital_Image_Processing
         {
             byte[,] new_image = new byte[(int)bitmapImage.Height, (int)bitmapImage.Width];
             new_image = getPixelsMatrix(bitmapImage);
-            new_image = MedianFilter(new_image,3);
+            new_image = FilterCore(new_image,5, Median);
+            //new_image = MedianFilter(new_image, 3);
             BitmapSource bit = BitmapFromByteArr(new_image);
             imageAfter.Source = bit;
         }
@@ -362,7 +290,7 @@ namespace Basics_of_Digital_Image_Processing
         {
             byte[,] new_image = new byte[(int)bitmapImage.Height, (int)bitmapImage.Width];
             new_image = getPixelsMatrix(bitmapImage);
-            new_image = MinimumFilter(new_image, 3);
+            new_image = FilterCore(new_image, 3 , Minimum);
             BitmapSource bit = BitmapFromByteArr(new_image);
             imageAfter.Source = bit;
         }
@@ -371,7 +299,7 @@ namespace Basics_of_Digital_Image_Processing
         {
             byte[,] new_image = new byte[(int)bitmapImage.Height, (int)bitmapImage.Width];
             new_image = getPixelsMatrix(bitmapImage);
-            new_image = MaximumFilter(new_image, 3);
+            new_image = FilterCore(new_image, 3 , Maximum);
             BitmapSource bit = BitmapFromByteArr(new_image);
             imageAfter.Source = bit;
         }
@@ -383,6 +311,7 @@ namespace Basics_of_Digital_Image_Processing
             new_image = LinearСontrast(new_image);
             BitmapSource bit = BitmapFromByteArr(new_image);
             imageAfter.Source = bit;
+            
         }
 
         private void TextBlockClick_HistogramAlignment(object sender, RoutedEventArgs e)
@@ -398,20 +327,23 @@ namespace Basics_of_Digital_Image_Processing
         private void TextBlockClick_HistogramAlignmentRGB(object sender, RoutedEventArgs e)
         {
             
-            byte[,] matrixCompontentR = new byte[(int)bitmapImage.Height, (int)bitmapImage.Width];
-            byte[,] matrixCompontentG = new byte[(int)bitmapImage.Height, (int)bitmapImage.Width];
-            byte[,] matrixCompontentB = new byte[(int)bitmapImage.Height, (int)bitmapImage.Width];
+            byte[,] matrixCompontentR;
+            byte[,] matrixCompontentG;
+            byte[,] matrixCompontentB;
 
-            matrixCompontentR = getPixelsMatrixForRGB(bitmapImage)[0];
-            matrixCompontentG = getPixelsMatrixForRGB(bitmapImage)[1];
-            matrixCompontentB = getPixelsMatrixForRGB(bitmapImage)[2];
+            List<byte[,]> matrixComponents = new List<byte[,]>();
+            matrixComponents = getPixelsMatrixForRGB(bitmapImage);
+
+            matrixCompontentR = matrixComponents[0];
+            matrixCompontentG = matrixComponents[1];
+            matrixCompontentB = matrixComponents[2];
 
             matrixCompontentR = HistogramAlignment(matrixCompontentR, brightnessPixelsR);
             matrixCompontentG= HistogramAlignment(matrixCompontentG, brightnessPixelsG);
             matrixCompontentB = HistogramAlignment(matrixCompontentB, brightnessPixelsB);
 
             BitmapSource bit = BitmapFromByteArr(matrixCompontentR,matrixCompontentG,matrixCompontentB);
-            imageAfter.Source = null;
+            
             imageAfter.Source = bit;
         }
 
@@ -456,7 +388,7 @@ namespace Basics_of_Digital_Image_Processing
                 }
             }
             BitmapSource bit = BitmapFromByteArr(matrixCompontentR, matrixCompontentG, matrixCompontentB);
-            imageAfter.Source = null;
+           
             imageAfter.Source = bit;
         }
     }
