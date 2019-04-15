@@ -391,5 +391,7 @@ namespace Basics_of_Digital_Image_Processing
            
             imageAfter.Source = bit;
         }
+
+        
     }
 }

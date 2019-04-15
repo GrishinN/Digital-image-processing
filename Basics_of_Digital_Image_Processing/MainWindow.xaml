@@ -4,19 +4,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Basics_of_Digital_Image_Processing"
+		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Basics of Digital Image Processing" Height="450" Width="800">
+        Title="Basics of Digital Image Processing" Height="450" Width="800" WindowStartupLocation="CenterScreen">
 	<Grid>
-		<Image x:Name="imageAfter" HorizontalAlignment="Left" Height="239" Margin="473,75,0,0" VerticalAlignment="Top" Width="255"/>
-		<Image x:Name="imageBefore" HorizontalAlignment="Left" Height="239" Margin="78,75,0,0" VerticalAlignment="Top" Width="252"/>
-		<Button x:Name="button" Click="button_Click" Content="Выбор изображения" HorizontalAlignment="Left" Margin="625,346,0,0" VerticalAlignment="Top" Width="131" Height="41"/>
-		<RadioButton x:Name="radioButton" Content="Медианный фильтр" Click="TextBlockClick_MedianFilter" HorizontalAlignment="Left" Margin="93,354,0,0" VerticalAlignment="Top" Height="18" Width="133" RenderTransformOrigin="0.495,0.45"/>
-		<RadioButton x:Name="radioButton1" Content="Фильтр максимума" Click="TextBlockClick_MaximumFilter" HorizontalAlignment="Left" Margin="93,369,0,0" VerticalAlignment="Top"/>
-		<RadioButton x:Name="radioButton2" Content="Фильтр минимума" Click="TextBlockClick_MinimumFilter" HorizontalAlignment="Left" Margin="93,384,0,0" VerticalAlignment="Top"/>
-		<RadioButton x:Name="radioButton3" Content="Выравнивание гистограммы" Click="TextBlockClick_HistogramAlignment" HorizontalAlignment="Left" Margin="313,354,0,0" VerticalAlignment="Top"/>
-		<RadioButton x:Name="radioButton4" Content="Линейное контрастирование" Click="TextBlockClick_LinearСontrast" HorizontalAlignment="Left" Margin="93,399,0,0" VerticalAlignment="Top"/>
-		<RadioButton x:Name="radioButton5" Content="Выравнивание гистограммы(RGB)" Click="TextBlockClick_HistogramAlignmentRGB" HorizontalAlignment="Left" Margin="313,369,0,0" VerticalAlignment="Top"/>
-		<RadioButton x:Name="radioButton6" Content="Выравнивание гистограммы(HSV)" Click="TextBlockClick_HistogramAlignmentHSV" HorizontalAlignment="Left" Margin="313,384,0,0" VerticalAlignment="Top"/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="0.5*"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
 
+		
+		<Image Grid.Row="0" x:Name="imageBefore" Height="Auto"  Width="Auto"  />
+		<Image Grid.Row="0" Grid.Column="1" x:Name="imageAfter"  Height="Auto"  Width="Auto"/>
+
+
+		<Grid Grid.Row="1" Grid.Column="0">
+			<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+				<RadioButton x:Name="radioButton" Content="Медианный фильтр" Click="TextBlockClick_MedianFilter"   />
+				<RadioButton x:Name="radioButton1" Content="Фильтр максимума" Click="TextBlockClick_MaximumFilter" />
+				<RadioButton x:Name="radioButton2" Content="Фильтр минимума" Click="TextBlockClick_MinimumFilter" />
+				<RadioButton x:Name="radioButton3" Content="Выравнивание гистограммы" Click="TextBlockClick_HistogramAlignment" />
+				<RadioButton x:Name="radioButton4" Content="Линейное контрастирование" Click="TextBlockClick_LinearСontrast"/>
+				<RadioButton x:Name="radioButton5" Content="Выравнивание гистограммы(RGB)" Click="TextBlockClick_HistogramAlignmentRGB"/>
+				<RadioButton x:Name="radioButton6" Content="Выравнивание гистограммы(HSV)" Click="TextBlockClick_HistogramAlignmentHSV"/>
+			</StackPanel>
+		</Grid>
+		<Grid Grid.Row="1" Grid.Column="1">
+			<StackPanel VerticalAlignment="Center" >
+				<Button x:Name="button" Click="button_Click" Content="Выбор изображения" Width="131" Height="41" Background="Azure" />
+			</StackPanel>
+		</Grid>
+		<!--<Button Width="30" Height="30" Padding="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5">
+			<materialDesign:PackIcon Kind="Menu" Foreground="#FF3580BF"/>
+		</Button>-->
 	</Grid>
 </Window>
